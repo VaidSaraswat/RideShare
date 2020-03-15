@@ -3,7 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const port = 3000;
-const userController = require('../Server/controllers/userController.js')
+const userController = require('../Server/controllers/userController.js');
+const rideController = require('../Server/controllers/rideController.js');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 require('dotenv').config();
@@ -19,6 +20,7 @@ let router = express.Router();
 
 app.use('/api', router);
 app.use('', userController);
+app.use('', rideController);
 
 // START THE SERVER
 // =============================================================================
