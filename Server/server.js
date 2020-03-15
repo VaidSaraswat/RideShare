@@ -13,11 +13,14 @@ const api_key = process.env.API_KEY;
 mongoose.connect(`mongodb+srv://Vaid:${api_key}@cluster0-u4itf.mongodb.net/test?retryWrites=true&w=majority`, 
 {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
 });
 
+//Create router
 let router = express.Router();
 
+//Get controllers
 app.use('/api', router);
 app.use('', userController);
 app.use('', rideController);
