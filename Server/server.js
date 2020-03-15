@@ -22,6 +22,7 @@ app.use('/api', router);
 app.use('', userController);
 app.use('', rideController);
 
+
 // START THE SERVER
 // =============================================================================
 app.listen(port);
