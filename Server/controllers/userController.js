@@ -36,7 +36,7 @@ router.route('/api/users')
           res.send(err);
         }
         else{
-          res.json({ message: 'Account Created Successfully!' });
+          res.json({message: 'Account Created Successfully!' });
         }
       });
     }
