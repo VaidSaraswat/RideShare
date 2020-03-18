@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user.js');
 
+const changeStream = User.watch();
+changeStream.on('change', (change)=>{
+  console.log('The collection has changed!');
+})
 router.route('/api/users')
 
   //Get all the users

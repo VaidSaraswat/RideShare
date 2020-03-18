@@ -2,6 +2,13 @@ const express = require('express');
 const router = express.Router();
 const Ride = require('../models/ride.js');
 
+function parseDate(input, time){
+  let parts = input.match(/(\d+)/g);
+  let hours = parseInt(time.substring(0, 2));
+  let mins = parseInt(time.substring(3, 5));
+  return new Date(parts[0], parts[1]-1, parts[2], hours, mins);
+}
+
 router.route('/api/rides')
   //Get all the rides
   .get((req, res)=>{
@@ -17,8 +24,9 @@ router.route('/api/rides')
 
   //Create ride and save to database
   .put(async (req, res)=>{
+    //Create ride object and format information
     let ride = new Ride();
-    ride.departingDate = req.body.departingDate;
+    ride.departingDate = parseDate(req.body.departingDate, req.body.departingTime);
     ride.departingLocation = req.body.departingLocation;
     ride.departingTime = req.body.departingTime;
     ride.arrivingLocation = req.body.arrivingLocation;
@@ -55,7 +63,8 @@ router.route('/api/rides')
   //Delete ride from database
   .delete((req, res)=>{
     let name = req.body.name;
-    let date = req.body.departingDate;
+    let date = parseDate(req.body.departingDate, req.body.departingTime);
+    console.log('This is the date that needs to be deleted '+date);
     let location = req.body.departingLocation;
 
     Ride.findOneAndRemove({driverName: name, departingDate: date, departingLocation: location}, (err)=>{
