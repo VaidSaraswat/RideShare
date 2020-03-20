@@ -54,7 +54,7 @@ router.route('/api/users')
   })
 
   //Update user information
-  .post((req, res)=>{
+  .post(async (req, res)=>{
     let newUserInfo = {};
     if(req.body.newName == ''){
       newUserInfo.name = req.body.oldName;
@@ -72,7 +72,8 @@ router.route('/api/users')
       newUserInfo.password = req.body.oldPassword;
     }
     else{
-      newUserInfo.password = req.body.newPassword;
+      const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+      newUserInfo.password = hashedPassword;
     }
 
     User.findOneAndUpdate({name: req.body.oldName}, newUserInfo, (err)=>{
