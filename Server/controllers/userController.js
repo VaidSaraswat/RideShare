@@ -99,24 +99,20 @@ router.route('/api/users')
 
   router.route('/api/users/login')
     .post(async (req, res)=>{
-
      let user = await User.findOne({name: req.body.name});
       
       if(user == null){
         res.send('Cannot find user!');
       }
-
       else{
         try{
-          
           if(await bcrypt.compare(req.body.password, user.password)){
             res.send('Success!');
           }
           else{
             res.send('Not Allowed!');
-          }
+          } 
         }
-
         catch{
           res.send('Error!');
         }

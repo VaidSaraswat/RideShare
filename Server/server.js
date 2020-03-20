@@ -8,9 +8,9 @@ const rideController = require('../Server/controllers/rideController.js');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 require('dotenv').config();
-const api_key = process.env.API_KEY;
+const URL = process.env.URL;
 
-mongoose.connect(`mongodb+srv://Vaid:${api_key}@cluster0-u4itf.mongodb.net/test?retryWrites=true&w=majority`, 
+mongoose.connect(URL, 
 {
   useNewUrlParser: true,
   useUnifiedTopology: true,
