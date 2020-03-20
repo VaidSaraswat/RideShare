@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const User = require('../models/user.js');
 
 router.route('/api/users')
@@ -18,27 +19,37 @@ router.route('/api/users')
   
   //Create user
   .put(async (req, res)=>{
-    let user = new User();
-    user.name = req.body.name;
-    user.number = req.body.number;
-    user.password = req.body.password;
-
     //Check if the username is currently available if so then add to the db, otherwise notify them to use a different username
-    let exists = await User.exists({name: user.name});
+    let exists = await User.exists({name: req.body.name});
 
-    if(exists == true){
-      res.json({message: 'Sorry that user name is already taken!'});
+    if(exists){
+      res.send('Sorry that user name is already taken!');
     }
+    
+    //Hash users password and store user into db
     else{
-      user.save((err)=>{
-        if(err)
-        {
-          res.send(err);
-        }
-        else{
-          res.json({message: 'Account Created Successfully!' });
-        }
-      });
+      let user = new User();
+      user.name = req.body.name;
+      user.number = req.body.number;
+
+      try{
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        user.password = hashedPassword;
+
+        user.save((err)=>{
+          if(err)
+          {
+            res.send(err);
+          }
+          else{
+            res.send('Account Created Successfully!');
+          }
+        });
+        
+      }
+      catch{
+        res.send('Error, something happend on server side');
+      }
     }
   })
 
@@ -69,7 +80,7 @@ router.route('/api/users')
         res.send(err);
       }
       else{
-        res.json({message: 'Your information is updated'});
+        res.send('Your information is updated');
       }
     });
   })
@@ -81,9 +92,35 @@ router.route('/api/users')
         res.send(err);
       }
       else{
-        res.json({message: 'User was deleted successfully'});
+        res.send('User was deleted successfully');
       }
     });
   });
+
+  router.route('/api/users/login')
+    .post(async (req, res)=>{
+
+     let user = await User.findOne({name: req.body.name});
+      
+      if(user == null){
+        res.send('Cannot find user!');
+      }
+
+      else{
+        try{
+          
+          if(await bcrypt.compare(req.body.password, user.password)){
+            res.send('Success!');
+          }
+          else{
+            res.send('Not Allowed!');
+          }
+        }
+
+        catch{
+          res.send('Error!');
+        }
+      }
+    });
 
   module.exports = router;
