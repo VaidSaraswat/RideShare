@@ -2,10 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user.js');
 
-const changeStream = User.watch();
-changeStream.on('change', (change)=>{
-  console.log('The collection has changed!');
-})
 router.route('/api/users')
 
   //Get all the users
@@ -44,6 +40,38 @@ router.route('/api/users')
         }
       });
     }
+  })
+
+  //Update user information
+  .post((req, res)=>{
+    let newUserInfo = {};
+    if(req.body.newName == ''){
+      newUserInfo.name = req.body.oldName;
+    }
+    else{
+      newUserInfo.name = req.body.newName;
+    }
+    if(req.body.newNumber == ''){
+      newUserInfo.number = req.body.oldNumber;
+    }
+    else{
+      newUserInfo.number = req.body.newNumber;
+    }
+    if(req.body.newPassword == ''){
+      newUserInfo.password = req.body.oldPassword;
+    }
+    else{
+      newUserInfo.password = req.body.newPassword;
+    }
+
+    User.findOneAndUpdate({name: req.body.oldName}, newUserInfo, (err)=>{
+      if(err){
+        res.send(err);
+      }
+      else{
+        res.json({message: 'Your information is updated'});
+      }
+    });
   })
 
   //Delete user from system
