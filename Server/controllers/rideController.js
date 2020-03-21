@@ -45,7 +45,7 @@ router.route('/api/rides')
     //Check if the ride already exists if so then redirect indicating that the ride was already created, otherwise save the ride to the db
     let exists = await Ride.exists({departingDate: ride.departingDate, departingLocation: ride.departingLocation, departingTime: ride.departingTime, arrivingLocation: ride.arrivingLocation, price: ride.price, driverName: ride.driverName, driverNumber: ride.driverNumber});
 
-    if(exists == true){
+    if(exists){
       res.send('Sorry this ride was already created!');
     }
     else{
@@ -64,7 +64,6 @@ router.route('/api/rides')
   .delete((req, res)=>{
     let name = req.body.name;
     let date = parseDate(req.body.departingDate, req.body.departingTime);
-    console.log('This is the date that needs to be deleted '+date);
     let location = req.body.departingLocation;
 
     Ride.findOneAndRemove({driverName: name, departingDate: date, departingLocation: location}, (err)=>{

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user.js');
+const Ride = require('../models/ride.js');
 
 async function isUniqueName(name){
   let exists = await User.exists({name: name});
@@ -110,6 +111,12 @@ router.route('/api/users/updateName')
         if(err){
           res.send(err);
         }
+      });
+
+      Ride.updateMany({driverName: req.body.oldName}, {driverName: req.body.newName}, (err)=>{
+        if(err){
+          res.send(err);
+        }
         else{
           res.send('Your username was updated successfully!');
         }
@@ -123,8 +130,14 @@ router.route('/api/users/updateNumber')
       if(err){
         res.send(err);
       }
+    });
+
+    Ride.updateMany({driverName: req.body.name}, {driverNumber: req.body.newNumber}, (err)=>{
+      if(err){
+        res.send(err);
+      }
       else{
-        res.send('Your phone number was updated successfully');
+        res.send('Your phone number was updated successfully!');
       }
     });
   });
