@@ -1,174 +1,131 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user.js');
-const Ride = require('../models/ride.js');
+require('dotenv').config();
 
-async function isUniqueName(name){
-  let exists = await User.exists({name: name});
-  if(exists){
-    return true;
+function authenticateToken(req, res, next){
+  const authHeader = req.headers['authorization']; //Get the authorization header
+  const token = authHeader && authHeader.split(' ')[1]; //Token is going to be either undefined or the correct token
+  req.payload = null; //Set the payload to null
+  if(token == null){
+    res.send('No token received!');
   }
+
   else{
-    return false;
-  }
-}
-
-router.route('/api/users')
-  //Get all the users
-  .get((req, res)=>{
-    User.find((err, users)=>{
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload)=>{
       if(err){
-        res.send(err);
+        res.send('Token No Longer Valid');
       }
       else{
-        res.json(users);
+        console.log('Token is valid!');
+        req.payload = payload;
       }
-    })
-  })
+    });
+    next();
+  }
   
-  //Create user
-  .put(async (req, res)=>{
-    //Check if the username is currently available if so then add to the db, otherwise notify them to use a different username
-
-    let exists = await isUniqueName(req.body.name);
-    if(exists){
-      res.send('Sorry that user name is already taken!');
+}
+router.route('/api/users')
+  //Get all the users
+  .get(authenticateToken, (req, res)=>{
+    //Only get users if the payload is set
+    if(req.payload !== null){
+      User.find((err, users)=>{
+        if(err){
+          res.send(err);
+        }
+        else{
+          console.log('Sending back users');
+          res.json(users);
+        }
+      });
     }
-    
-    //Hash users password and store user into db
-    else{
-      let user = new User();
-      user.name = req.body.name;
-      user.number = req.body.number;
+  });
 
-      try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        user.password = hashedPassword;
-
-        user.save((err)=>{
-          if(err)
-          {
+router.route('/api/users/updateName')
+  .post(authenticateToken, async (req, res)=>{
+    //Authenticate user
+    if(req.payload !== null){
+      //Check if the name is unique, if it is then update the name otherwise send error indicating that the name already exists
+      let exists = await User.exists({name: req.body.newName});
+      if(exists){
+        res.send('Sorry that name already exists');
+      }
+      else{
+        User.findOneAndUpdate({name: req.body.oldName}, {name: req.body.newName}, (err)=>{
+          if(err){
             res.send(err);
           }
           else{
-            res.send('Account Created Successfully!');
+            res.send('Your name was updated successfully!');
           }
         });
-        
       }
-      catch{
-        res.send('Error, something happend on server side');
-      }
-    }
-  })
-
-  //Delete user from system
-  .delete((req, res)=>{
-    User.findOneAndRemove({name: req.body.name}, (err)=>{
-      if(err){
-        res.send(err);
-      }
-      else{
-        res.send('User was deleted successfully');
-      }
-    });
-  });
-
-router.route('/api/users/login')
-  .post(async (req, res)=>{
-    let user = await User.findOne({name: req.body.name});
-    
-    if(user == null){
-      res.send('Cannot find user!');
-    }
-    else{
-      try{
-        if(await bcrypt.compare(req.body.password, user.password)){
-          res.send('Success!');
-        }
-        else{
-          res.send('Not Allowed!');
-        } 
-      }
-      catch{
-        res.send('Error!');
-      }
-    }
-  });
-  
-router.route('/api/users/updateName')
-  .post(async (req, res)=>{
-    //Check if the name is unique, if it is then update the name otherwise send error indicating that the name already exists
-    let exists = await isUniqueName(req.body.newName);
-
-    if(exists){
-      res.send('Sorry that name already exists');
-    }
-
-    else{
-      User.findOneAndUpdate({name: req.body.oldName}, {name: req.body.newName}, (err)=>{
-        if(err){
-          res.send(err);
-        }
-      });
-
-      Ride.updateMany({driverName: req.body.oldName}, {driverName: req.body.newName}, (err)=>{
-        if(err){
-          res.send(err);
-        }
-        else{
-          res.send('Your username was updated successfully!');
-        }
-      });
     }
   });
 
 router.route('/api/users/updateNumber')
-  .post((req, res)=>{
-    User.findOneAndUpdate({name: req.body.name}, {number: req.body.newNumber}, (err)=>{
-      if(err){
-        res.send(err);
-      }
-    });
-
-    Ride.updateMany({driverName: req.body.name}, {driverNumber: req.body.newNumber}, (err)=>{
-      if(err){
-        res.send(err);
-      }
-      else{
-        res.send('Your phone number was updated successfully!');
-      }
-    });
+  .post(authenticateToken, (req, res)=>{
+    //Authenticate user
+    if(req.payload !== null){
+      User.findOneAndUpdate({name: req.body.name}, {number: req.body.newNumber}, (err)=>{
+        if(err){
+          res.send(err);
+        }
+        else{
+          res.send('Your phone number ws updated successfully!');
+        }
+      });
+    }
   });
 
 router.route('/api/users/updatePassword')
-  .post(async (req, res)=>{
-    let user = await User.findOne({name: req.body.name});
-    if(user == null){
-      res.send('Invalid Username!');
-    }
-    else{
-      try{
-        if(await bcrypt.compare(req.body.password, user.password)){
+  .post(authenticateToken, async (req, res)=>{
+    //Authenticate user
+    if(req.payload !== null){
+      let user = await User.findOne({name: req.body.name});
+      if(user == null){
+        res.send('Invalid Username!');
+      }
+      else{
+        try{
+          if(await bcrypt.compare(req.body.password, user.password)){
+  
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+            User.findOneAndUpdate({name: req.body.name}, {password: hashedPassword}, (err)=>{
+              if(err){
+                res.send(err);
+              }
+              else{
+                res.send('Your password was updated successfully!');
+              }
+            });
+          }
+          else{
+            res.send('Invalid Credentials!');
+          } 
+        }
+        catch{
+          res.send('Error!');
+        }
+      }
+    }  
+  });
 
-          const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
-          User.findOneAndUpdate({name: req.body.name}, {password: hashedPassword}, (err)=>{
-            if(err){
-              res.send(err);
-            }
-            else{
-              res.send('Your password was updated successfully!');
-            }
-          });
+router.route('/api/users/deleteProfile')
+  //Delete user from system
+  .delete(authenticateToken, (req, res)=>{
+    if(req.payload !== null){
+      User.findOneAndRemove({name: req.body.name}, (err)=>{
+        if(err){
+          res.send(err);
         }
         else{
-          res.send('Invalid Credentials!');
-        } 
-      }
-      catch{
-        res.send('Error!');
-      }
+          res.send('User was deleted successfully');
+        }
+      });
     }
   });
 
