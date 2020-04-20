@@ -39,7 +39,9 @@ router.route('/api/rides')
           res.send(err);
         }
         else{
-          res.json(rides);
+          //Sort rides by dates, the earlier ones are showed first
+          rides.sort((a, b)=> a.departingDate - b.departingDate); 
+          res.send(rides);
         }
       });
     }
