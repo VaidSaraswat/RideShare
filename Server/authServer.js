@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 const User = require('../Server/models/user.js');
+const RefreshToken = require('../Server/models/refreshToken.js');
+
 require('dotenv').config();
 //Create router
 let router = express.Router();
@@ -21,38 +23,49 @@ mongoose.connect(URL,
   useFindAndModify: false
 });
 
-let refreshTokens = [];
-
 function generateAccessToken(payload){
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30min'});
 }
 router.route('/token')
-  .post((req, res)=>{
+  .post(async (req, res)=>{
     const refreshToken = req.body.token;
     if(refreshToken == null){
-      return res.sendStatus(401);
+      res.sendStatus(401);
     }
 
-    if(!refreshTokens.includes(refreshToken)){
-      return res.sendStatus(403);
-    }
-
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, payload)=>{
-      if(err){
-        res.send(err);
+    else{
+      //Check if the refresh token is currently in the token db
+      let exists = await RefreshToken.exists({token: refreshToken});
+      //If not then the refresh token is invalid
+      if(!exists){
+        res.sendStatus(403);
       }
-
+      //Generate new access token for the user
       else{
-        const accessToken = generateAccessToken({name: payload.name});
-        res.json({accessToken: accessToken});
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, payload)=>{
+          if(err){
+            res.send(err);
+          }
+    
+          else{
+            const accessToken = generateAccessToken({name: payload.name});
+            res.json({accessToken: accessToken});
+          }
+        });
       }
-    });
+    }
   });
 
 router.route('/logout')
   .post((req, res)=>{
-    refreshTokens = refreshTokens.filter(token => token !== req.body.token);
-    res.sendStatus(204);
+    RefreshToken.findOneAndRemove({token: req.body.token}, (err)=>{
+      if(err){
+        res.send(err);
+      }
+      else{
+        res.send('Refresh token was deleted from the database');
+      }
+    });
   });
 router.route('/login')
   .post(async (req, res)=>{
@@ -64,10 +77,15 @@ router.route('/login')
     else{
       try{
         if(await bcrypt.compare(req.body.password, user.password)){
-          const payload = {name: user.name, number: user.number};
-          const accessToken = generateAccessToken(payload);
-          const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
-          refreshTokens.push(refreshToken);
+          let payload = {name: user.name, number: user.number};
+          let accessToken = generateAccessToken(payload);
+          let refreshToken = new RefreshToken();
+          refreshToken.token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
+          refreshToken.save((err)=>{
+            if(err){
+              console.log(err);
+            }
+          });
           res.json({accessToken: accessToken, refreshToken: refreshToken});
         }
         else{
@@ -94,7 +112,7 @@ router.route('/register')
       user.number = req.body.number;
 
       try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        let hashedPassword = await bcrypt.hash(req.body.password, 10);
         user.password = hashedPassword;
 
         user.save((err)=>{
