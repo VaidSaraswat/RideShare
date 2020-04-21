@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Ride = require('../models/ride.js');
-
+//Needed to create a date in the iso string format
 function parseDate(input, time){
   let parts = input.match(/(\d+)/g);
   let hours = parseInt(time.substring(0, 2));
   let mins = parseInt(time.substring(3, 5));
   return new Date(parts[0], parts[1]-1, parts[2], hours, mins);
 }
-
+//Needed to authenticate user's token
 function authenticateToken(req, res, next){
   const authHeader = req.headers['authorization']; //Get the authorization header
   const token = authHeader && authHeader.split(' ')[1]; //Token is going to be either undefined or the correct token
@@ -23,18 +23,42 @@ function authenticateToken(req, res, next){
         res.send('Token No Longer Valid');
       }
       else{
-        console.log('Token is valid!');
         req.payload = payload;
       }
     });
     next();
   }
 }
+//Needed to update rides db when they have departed
+async function removeDepartedRides(){
+  let today = new Date();
+  let datesArr = [];
+  await Ride.find((err, rides)=>{
+    if(err){
+      console.log(err);
+    }
+    else{
+      datesArr = rides;
+    }
+  });
+  for(let i = 0; i < datesArr.length; i++){
+    if(today > new Date(datesArr[i].departingDate)){
+      await Ride.findOneAndRemove({departingDate: datesArr[i].departingDate}, (err)=>{
+        if(err){
+          console.log(err);
+        }
+      })
+    }
+  }
+
+}
 router.route('/api/rides')
   //Get all the rides
-  .get(authenticateToken, (req, res)=>{
+  .get(authenticateToken, async (req, res)=>{
     //Athenticate User
     if(req.payload !== null){
+      //check for rides that have departed
+      removeDepartedRides();
       Ride.find((err, rides)=>{
         if(err){
           res.send(err);
