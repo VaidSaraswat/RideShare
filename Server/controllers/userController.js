@@ -19,7 +19,6 @@ function authenticateToken(req, res, next){
         res.send('Token No Longer Valid');
       }
       else{
-        console.log('Token is valid!');
         req.payload = payload;
       }
     });
