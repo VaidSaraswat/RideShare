@@ -6,6 +6,7 @@ import AddReview from "./AddReview";
 import Drivers from "./Drivers";
 import Account from "./Account";
 import Auth from "./Auth";
+import AddRide from "./AddRide";
 import history from "../history";
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
         <Header />
         <Switch>
           <Route path="/" exact component={Rides}></Route>
+          <Route path="/addride" exact component={AddRide}></Route>
           <Route path="/addreview" exact component={AddReview}></Route>
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>

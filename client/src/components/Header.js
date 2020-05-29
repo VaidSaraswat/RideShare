@@ -6,6 +6,9 @@ const Header = () => {
       <Link to="/" className="header item">
         RideShare
       </Link>
+      <Link to="/addride" className="header item">
+        Add Ride
+      </Link>
       <Link to="/addreview" className="header item">
         Add Review
       </Link>
