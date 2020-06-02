@@ -2,16 +2,33 @@ import React from "react";
 import { Field, reduxForm } from "redux-form";
 import { signIn } from "../actions";
 import { connect } from "react-redux";
-
 class LoginForm extends React.Component {
-  renderInput = ({ input, label, type, meta: { touched, error } }) => (
-    <div className="field">
-      <label>{label}</label>
-      <div>
-        <input {...input} placeholder={label} type={type} />
+  renderErrors({ error, touched }) {
+    if (touched && error) {
+      return (
+        <div className="ui error message">
+          <div className="header">{error}</div>
+        </div>
+      );
+    }
+  }
+  renderSubmissionError({ error }) {
+    if (error) {
+      return <div className="ui error message">{error}</div>;
+    }
+  }
+  renderInput = ({ input, label, type, meta }) => {
+    const className = `field ${meta.error && meta.touched ? "error" : ""}`;
+    return (
+      <div className={className}>
+        <label>{label}</label>
+        <div>
+          <input {...input} placeholder={label} type={type} />
+        </div>
+        {this.renderErrors(meta)}
       </div>
-    </div>
-  );
+    );
+  };
 
   onSubmit = (formValues) => {
     this.props.signIn(formValues);
@@ -20,7 +37,7 @@ class LoginForm extends React.Component {
   render() {
     return (
       <form
-        className="ui form"
+        className="ui form error"
         onSubmit={this.props.handleSubmit(this.onSubmit)}
       >
         <Field
@@ -36,14 +53,40 @@ class LoginForm extends React.Component {
           label="Password"
         />
         <div>
-          <button className="ui button primary">Log In</button>
-          <button className="ui button">Cancel</button>
+          <button
+            className="ui button primary"
+            disabled={this.props.submitting}
+          >
+            Log In
+          </button>
+          <button
+            className="ui button"
+            disabled={this.props.pristine || this.props.submitting}
+            onClick={this.props.reset}
+          >
+            Cancel
+          </button>
         </div>
+        {this.renderSubmissionError(this.props.auth)}
       </form>
     );
   }
 }
 
-LoginForm = connect(null, { signIn })(LoginForm);
+const validate = (formValues) => {
+  const errors = {};
+  if (!formValues.name) {
+    errors.name = "You must enter a username";
+  }
+  if (!formValues.password) {
+    errors.password = "You must enter a password";
+  }
 
-export default reduxForm({ form: "loginForm" })(LoginForm);
+  return errors;
+};
+const mapStateToProps = (state) => {
+  return { auth: state.validate };
+};
+LoginForm = connect(mapStateToProps, { signIn })(LoginForm);
+
+export default reduxForm({ form: "loginForm", validate })(LoginForm);

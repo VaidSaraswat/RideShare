@@ -71,7 +71,7 @@ router.route("/login").post(async (req, res) => {
   //Authenticate user and if successful then issue json web token
   let user = await User.findOne({ name: req.body.name });
   if (user == null) {
-    res.send("Cannot find user!");
+    res.send("Invalid Username/Password");
   } else {
     try {
       if (await bcrypt.compare(req.body.password, user.password)) {
@@ -89,7 +89,7 @@ router.route("/login").post(async (req, res) => {
         });
         res.json({ accessToken: accessToken, refreshToken: refreshToken });
       } else {
-        res.send("Invalid Password/Username!");
+        res.send("Invalid Username/Password");
       }
     } catch {
       res.send("Error!");

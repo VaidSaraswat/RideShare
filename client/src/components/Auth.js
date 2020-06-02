@@ -6,7 +6,7 @@ class Auth extends React.Component {
     if (this.props.isSignedIn === null) {
       return null;
     } else if (this.props.isSignedIn) {
-      return <button className="ui red google button">Sign Out</button>;
+      return <button className="ui red button">Sign Out</button>;
     } else {
       return (
         <button

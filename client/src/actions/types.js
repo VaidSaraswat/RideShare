@@ -5,3 +5,5 @@ export const ADD_RIDE = "ADD_RIDE";
 export const ADD_REVIEW = "ADD_REVIEW";
 export const FETCH_REVIEWS = "FETCH_REVIEWS";
 export const FETCH_ACCOUNT = "FETCH_ACCOUNT";
+export const FAILED_SIGN_IN = "FAILED_SIGN_IN";
+export const SUCCESSFUL_SIGN_IN = "SUCCESSFUL_SIGN_IN";

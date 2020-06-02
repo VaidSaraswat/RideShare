@@ -6,14 +6,24 @@ import {
   ADD_REVIEW,
   FETCH_REVIEWS,
   FETCH_ACCOUNT,
+  FAILED_SIGN_IN,
+  SUCCESSFUL_SIGN_IN,
 } from "./types";
 
 import rides from "../apis/rideServer";
 import auth from "../apis/authServer";
+import history from "../history";
 
 export const signIn = ({ name, password }) => async (dispatch) => {
   const response = await auth.post("/login", { name, password });
-  dispatch({ type: SIGN_IN, payload: response.data });
+  //Only update sign in state if server sends back a refresh and access token
+  if (response.data.accessToken && response.data.refreshToken) {
+    dispatch({ type: SIGN_IN, payload: response.data });
+    dispatch({ type: SUCCESSFUL_SIGN_IN }); //Update validation state
+    history.push("/"); //Send user back to main rides page
+  } else {
+    dispatch({ type: FAILED_SIGN_IN, payload: response.data }); //Update validation state
+  }
 };
 
 export const signOut = (refreshToken) => async (dispatch) => {
