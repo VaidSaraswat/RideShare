@@ -11,54 +11,52 @@ import {
 import rides from "../apis/rideServer";
 import auth from "../apis/authServer";
 
-const signIn = (userName, password) => (dispatch)=> {
-  const response = await auth.post('/login', {data: {
-    name: userName,
-    password: password
-  }});
-
-  dispatch({type: SIGN_IN, payload: response.data});
+export const signIn = ({ name, password }) => async (dispatch) => {
+  const response = await auth.post("/login", { name, password });
+  dispatch({ type: SIGN_IN, payload: response.data });
 };
 
-const signOut = (refreshToken) => {
-  const response = await auth.post('/logout', {data: {
-    token: refreshToken
-  }});
-  dispatch({type: SIGN_OUT, payload: response.data});
+export const signOut = (refreshToken) => async (dispatch) => {
+  const response = await auth.post("/logout", {
+    data: {
+      token: refreshToken,
+    },
+  });
+  dispatch({ type: SIGN_OUT, payload: response.data });
 };
 
-const fetchRides = (token) => async (dispatch) => {
+export const fetchRides = (token) => async (dispatch) => {
   const response = await rides.get("/api/rides", {
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: FETCH_RIDES, payload: response.data });
 };
 
-const fetchReviews = (token) => async (dispatch) => {
+export const fetchReviews = (token) => async (dispatch) => {
   const response = await rides.get("/api/ratings", {
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: FETCH_REVIEWS, payload: response.data });
 };
 
-const fetchAccount = (token) => async (dispatch) => {
+export const fetchAccount = (token) => async (dispatch) => {
   const response = await rides.get("/api/account", {
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: FETCH_ACCOUNT, payload: response.data });
 };
 
-const addRide = (formValues, token) => async (dispatch) => {
+export const addRide = (formValues, token) => async (dispatch) => {
   const response = await rides.put("/api/rides", {
-    data: {formValues},
+    data: { formValues },
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: ADD_RIDE, payload: response.data });
 };
 
-const addReview = (formValues, token) => async (dispatch) => {
+export const addReview = (formValues, token) => async (dispatch) => {
   const response = await rides.put("/api/addRating", {
-    data: {formValues},
+    data: { formValues },
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: ADD_REVIEW, payload: response.data });

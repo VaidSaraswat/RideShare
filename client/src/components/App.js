@@ -4,8 +4,8 @@ import Header from "./Header";
 import Rides from "./Rides";
 import AddReview from "./AddReview";
 import Drivers from "./Drivers";
+import LoginForm from "./LoginForm";
 import Account from "./Account";
-import Auth from "./Auth";
 import AddRide from "./AddRide";
 import history from "../history";
 
@@ -20,7 +20,7 @@ const App = () => {
           <Route path="/addreview" exact component={AddReview}></Route>
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>
-          <Route path="/login" exact component={Auth}></Route>
+          <Route path="/login" exact component={LoginForm}></Route>
         </Switch>
       </Router>
     </div>

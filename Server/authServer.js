@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const port = 4000;
+const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 const User = require("../Server/models/user.js");
 const RefreshToken = require("../Server/models/refreshToken.js");
 
