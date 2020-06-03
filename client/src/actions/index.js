@@ -26,12 +26,10 @@ export const signIn = ({ name, password }) => async (dispatch) => {
   }
 };
 
-export const signOut = (refreshToken) => async (dispatch) => {
-  const response = await auth.post("/logout", {
-    data: {
-      token: refreshToken,
-    },
-  });
+//Destructure the token key out of the refreshToken and send it to the server to remove it from list of refreshTokens
+export const signOut = ({ token }) => async (dispatch) => {
+  const response = await auth.post("/logout", { token });
+
   dispatch({ type: SIGN_OUT, payload: response.data });
 };
 

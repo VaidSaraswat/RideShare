@@ -1,12 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
 import history from "../history";
+import { signOut } from "../actions";
 class Auth extends React.Component {
   renderAuthButton() {
     if (this.props.isSignedIn === null) {
       return null;
     } else if (this.props.isSignedIn) {
-      return <button className="ui red button">Sign Out</button>;
+      return (
+        <button
+          className="ui red button"
+          onClick={() => this.props.signOut(this.props.refreshToken)}
+        >
+          Sign Out
+        </button>
+      );
     } else {
       return (
         <button
@@ -24,7 +32,10 @@ class Auth extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  return { isSignedIn: state.auth.isSignedIn };
+  return {
+    isSignedIn: state.auth.isSignedIn,
+    refreshToken: state.auth.refreshToken,
+  };
 };
 
-export default connect(mapStateToProps)(Auth);
+export default connect(mapStateToProps, { signOut })(Auth);
