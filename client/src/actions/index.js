@@ -69,11 +69,11 @@ export const editRide = (token, formValues, id) => async (dispatch) => {
 };
 
 export const deleteRide = (token, id) => async (dispatch) => {
-  /*const response = await rides.delete(`/api/rides/${id}`, {
+  await rides.delete(`/api/rides/${id}`, {
     headers: { Authorization: "Bearer " + token },
   });
 
-  dispatch({ type: DELETE_RIDE, payload: id });*/
+  dispatch({ type: DELETE_RIDE, payload: id });
 };
 
 //////////Review Actions

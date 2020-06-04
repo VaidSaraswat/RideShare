@@ -1,7 +1,7 @@
 import React from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import Header from "./Header";
-import Rides from "./Rides";
+import RidesList from "./RidesList";
 import AddReview from "./AddReview";
 import Drivers from "./Drivers";
 import LoginForm from "./LoginForm";
@@ -20,7 +20,7 @@ const App = () => {
           <Route path="/addreview" exact component={AddReview}></Route>
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>
-          <Route path="/rides" exact component={Rides}></Route>
+          <Route path="/rides" exact component={RidesList}></Route>
         </Switch>
       </Router>
     </div>
