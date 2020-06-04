@@ -1,7 +1,17 @@
 import React from "react";
+import { connect } from "react-redux";
+import { fetchRides } from "../actions";
 
-const Rides = () => {
-  return <div>Rides</div>;
+class Rides extends React.Component {
+  componentDidMount() {
+    this.props.fetchRides(this.props.auth);
+  }
+  render() {
+    return <div>Rides</div>;
+  }
+}
+
+const mapStateToProps = (state) => {
+  return { rides: state.rides, auth: state.auth };
 };
-
-export default Rides;
+export default connect(mapStateToProps, { fetchRides })(Rides);

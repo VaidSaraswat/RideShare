@@ -15,12 +15,12 @@ const App = () => {
       <Router history={history}>
         <Header />
         <Switch>
-          <Route path="/" exact component={Rides}></Route>
+          <Route path="/" exact component={LoginForm}></Route>
           <Route path="/addride" exact component={AddRide}></Route>
           <Route path="/addreview" exact component={AddReview}></Route>
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>
-          <Route path="/login" exact component={LoginForm}></Route>
+          <Route path="/rides" exact component={Rides}></Route>
         </Switch>
       </Router>
     </div>

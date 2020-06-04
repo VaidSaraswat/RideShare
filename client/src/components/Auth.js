@@ -3,25 +3,17 @@ import { connect } from "react-redux";
 import history from "../history";
 import { signOut } from "../actions";
 class Auth extends React.Component {
+  renderLoginPage = () => {
+    this.props.signOut(this.props.refreshToken);
+    history.push("/");
+  };
   renderAuthButton() {
-    if (this.props.isSignedIn === null) {
+    if (this.props.isSignedIn === null || !this.props.isSignedIn) {
       return null;
-    } else if (this.props.isSignedIn) {
-      return (
-        <button
-          className="ui red button"
-          onClick={() => this.props.signOut(this.props.refreshToken)}
-        >
-          Sign Out
-        </button>
-      );
     } else {
       return (
-        <button
-          className="ui blue button"
-          onClick={() => history.push("/login")}
-        >
-          Sign in
+        <button className="ui red button" onClick={this.renderLoginPage}>
+          Sign Out
         </button>
       );
     }

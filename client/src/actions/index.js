@@ -2,7 +2,10 @@ import {
   SIGN_IN,
   SIGN_OUT,
   FETCH_RIDES,
-  ADD_RIDE,
+  FETCH_RIDE,
+  CREATE_RIDE,
+  DELETE_RIDE,
+  EDIT_RIDE,
   ADD_REVIEW,
   FETCH_REVIEWS,
   FETCH_ACCOUNT,
@@ -14,13 +17,14 @@ import rides from "../apis/rideServer";
 import auth from "../apis/authServer";
 import history from "../history";
 
+//////////Authentication Actions
 export const signIn = ({ name, password }) => async (dispatch) => {
   const response = await auth.post("/login", { name, password });
   //Only update sign in state if server sends back a refresh and access token
   if (response.data.accessToken && response.data.refreshToken) {
     dispatch({ type: SIGN_IN, payload: response.data });
     dispatch({ type: SUCCESSFUL_SIGN_IN }); //Update validation state
-    history.push("/"); //Send user back to main rides page
+    history.push("/rides"); //Send user back to main rides page
   } else {
     dispatch({ type: FAILED_SIGN_IN, payload: response.data }); //Update validation state
   }
@@ -29,17 +33,50 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 //Destructure the token key out of the refreshToken and send it to the server to remove it from list of refreshTokens
 export const signOut = ({ token }) => async (dispatch) => {
   const response = await auth.post("/logout", { token });
-
   dispatch({ type: SIGN_OUT, payload: response.data });
 };
 
-export const fetchRides = (token) => async (dispatch) => {
-  const response = await rides.get("/api/rides", {
-    headers: { Authorization: "Bearer " + token },
+//////////Ride Actions
+export const fetchRides = ({ accessToken }) => async (dispatch) => {
+  const response = await rides.get("/rides", {
+    headers: { Authorization: "Bearer " + accessToken },
   });
   dispatch({ type: FETCH_RIDES, payload: response.data });
 };
 
+export const fetchRide = (token, id) => async (dispatch) => {
+  const response = rides.get(`/api/rides/${id}`, {
+    headers: { Authorization: "Bearer " + token },
+  });
+  dispatch({ type: FETCH_RIDE, payload: response.data });
+};
+
+export const createRide = (formValues, token) => async (dispatch) => {
+  const response = await rides.put("/api/rides", {
+    data: { formValues },
+    headers: { Authorization: "Bearer " + token },
+  });
+  dispatch({ type: CREATE_RIDE, payload: response.data });
+};
+
+export const editRide = (token, formValues, id) => async (dispatch) => {
+  const response = rides.patch(`/api/rides/${id}`, {
+    data: formValues,
+    headers: { Authorization: "Bearer " + token },
+  });
+
+  dispatch({ type: EDIT_RIDE, payload: response.data });
+};
+
+export const deleteRide = (token, id) => async (dispatch) => {
+  /*const response = await rides.delete(`/api/rides/${id}`, {
+    headers: { Authorization: "Bearer " + token },
+  });
+
+  dispatch({ type: DELETE_RIDE, payload: id });*/
+};
+
+//////////Review Actions
 export const fetchReviews = (token) => async (dispatch) => {
   const response = await rides.get("/api/ratings", {
     headers: { Authorization: "Bearer " + token },
@@ -52,14 +89,6 @@ export const fetchAccount = (token) => async (dispatch) => {
     headers: { Authorization: "Bearer " + token },
   });
   dispatch({ type: FETCH_ACCOUNT, payload: response.data });
-};
-
-export const addRide = (formValues, token) => async (dispatch) => {
-  const response = await rides.put("/api/rides", {
-    data: { formValues },
-    headers: { Authorization: "Bearer " + token },
-  });
-  dispatch({ type: ADD_RIDE, payload: response.data });
 };
 
 export const addReview = (formValues, token) => async (dispatch) => {
