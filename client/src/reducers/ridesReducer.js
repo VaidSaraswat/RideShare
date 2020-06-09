@@ -10,7 +10,7 @@ import {
 export default (state = {}, action) => {
   switch (action.type) {
     case FETCH_RIDES:
-      return { ...state, ..._.mapKeys(action.payload, "_id") };
+      return { ..._.mapKeys(action.payload, "_id"), ...state };
     case FETCH_RIDE:
       return { ...state, [action.payload.id]: action.payload };
     case EDIT_RIDE:

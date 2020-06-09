@@ -33,8 +33,8 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 
 //Destructure the token key out of the refreshToken and send it to the server to remove it from list of refreshTokens
 export const signOut = ({ token }) => async (dispatch) => {
-  const response = await auth.post("/logout", { token });
-  dispatch({ type: SIGN_OUT, payload: response.data });
+  await auth.post("/logout", { token });
+  dispatch({ type: SIGN_OUT });
 };
 
 //////////Ride Actions
@@ -53,10 +53,16 @@ export const fetchRide = (token, id) => async (dispatch) => {
   dispatch({ type: FETCH_RIDE, payload: response.data });
 };
 
-export const createRide = (formvalues, { accessToken }) => async (dispatch) => {
-  const response = await rides.put("/rides", formvalues, {
-    headers: { Authorization: "Bearer " + accessToken },
-  });
+export const createRide = (formvalues, { accessToken, userId }) => async (
+  dispatch
+) => {
+  const response = await rides.put(
+    "/rides",
+    { ...formvalues, userId },
+    {
+      headers: { Authorization: "Bearer " + accessToken },
+    }
+  );
 
   //If there is an error update validate reducer
   if (response.data.error) {

@@ -84,10 +84,19 @@ router.route("/login").post(async (req, res) => {
         );
         refreshToken.save((err) => {
           if (err) {
-            console.log(err);
+            res.json({
+              error:
+                "Something went wrong on our side, please try again some time later!",
+            });
           }
         });
-        res.json({ accessToken: accessToken, refreshToken: refreshToken });
+        res.json({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: user._id,
+          name: user.name,
+          number: user.number,
+        });
       } else {
         res.send("Invalid Username/Password");
       }

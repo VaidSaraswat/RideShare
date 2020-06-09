@@ -30,9 +30,9 @@ router
     if (req.payload !== null) {
       User.findOne({ name: req.body.name }, (err, user) => {
         if (err) {
-          res.send(err);
+          res.json({ error: err });
         }
-        res.json(user);
+        res.json({ id: user._id, name: user.name, number: user.number });
       });
     }
   });

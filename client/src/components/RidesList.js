@@ -11,6 +11,7 @@ class RidesList extends React.Component {
     let dt = new Date(date);
     let h = dt.getHours(),
       m = dt.getMinutes();
+    m = m === 0 ? "00" : m; //If m is 0 then return two 00's otherwise return the exact number
     let time = h > 12 ? h - 12 + ":" + m + " PM" : h + ":" + m + " AM";
     return time;
   }
@@ -28,7 +29,11 @@ class RidesList extends React.Component {
               {this.parseDate(ride.departingDate)}
             </div>
             <div className="right floated right aligned eight wide column">
-              <i className="large user circle icon"></i>
+              <img
+                className="ui avatar image"
+                src="https://semantic-ui.com/images/avatar/small/christian.jpg"
+                alt="This is an avatar"
+              />
               {ride.driverName}
             </div>
             <div className="four wide column">

@@ -80,9 +80,10 @@ router
         req.body.departingDate,
         req.body.departingTime
       );
+      ride.userId = req.body.userId;
       ride.departingLocation = req.body.departingLocation;
-      ride.departingTime = req.body.departingTime;
       ride.arrivingLocation = req.body.arrivingLocation;
+      ride.departingTime = req.body.departingTime;
       ride.price = req.body.price;
       ride.driverName = req.body.driverName;
       ride.driverNumber = req.body.driverNumber;
