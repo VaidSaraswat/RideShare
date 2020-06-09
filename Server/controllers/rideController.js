@@ -106,13 +106,13 @@ router
       });
 
       if (exists) {
-        res.send("Sorry this ride was already created!");
+        res.json({ error: "Sorry this ride was already created!" });
       } else {
         ride.save((err) => {
           if (err) {
-            res.send(err);
+            res.json({ error: err });
           } else {
-            res.json({ message: "Ride was created successfully" });
+            res.json({ success: "Ride was created sucessfully!" });
           }
         });
       }

@@ -6,7 +6,7 @@ import AddReview from "./AddReview";
 import Drivers from "./Drivers";
 import LoginForm from "./LoginForm";
 import Account from "./Account";
-import AddRide from "./AddRide";
+import RideCreate from "./RideCreate";
 import history from "../history";
 
 const App = () => {
@@ -16,7 +16,7 @@ const App = () => {
         <Header />
         <Switch>
           <Route path="/" exact component={LoginForm}></Route>
-          <Route path="/addride" exact component={AddRide}></Route>
+          <Route path="/addride" exact component={RideCreate}></Route>
           <Route path="/addreview" exact component={AddReview}></Route>
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>
