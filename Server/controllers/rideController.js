@@ -118,25 +118,20 @@ router
         });
       }
     }
-  })
+  });
 
+router
+  .route("/api/rides/:id")
   //Delete ride from database
   .delete(authenticateToken, (req, res) => {
     if (req.payload !== null) {
-      let name = req.body.name;
-      let date = parseDate(req.body.departingDate, req.body.departingTime);
-      let location = req.body.departingLocation;
-
-      Ride.findOneAndRemove(
-        { driverName: name, departingDate: date, departingLocation: location },
-        (err) => {
-          if (err) {
-            res.send(err);
-          } else {
-            res.json({ message: "Ride was deleted successfully" });
-          }
+      Ride.findOneAndRemove({ _id: req.params.id }, (err) => {
+        if (err) {
+          res.json({ error: err });
+        } else {
+          res.json({ message: "Ride was deleted successfully" });
         }
-      );
+      });
     }
   });
 

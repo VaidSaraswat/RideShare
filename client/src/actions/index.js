@@ -82,12 +82,13 @@ export const editRide = (token, formValues, id) => async (dispatch) => {
   dispatch({ type: EDIT_RIDE, payload: response.data });
 };
 
-export const deleteRide = (token, id) => async (dispatch) => {
-  await rides.delete(`/api/rides/${id}`, {
-    headers: { Authorization: "Bearer " + token },
+export const deleteRide = ({ accessToken }, id) => async (dispatch) => {
+  await rides.delete(`/rides/${id}`, {
+    headers: { Authorization: "Bearer " + accessToken },
   });
 
   dispatch({ type: DELETE_RIDE, payload: id });
+  history.push("/rides");
 };
 
 //////////Review Actions

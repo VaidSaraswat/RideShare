@@ -7,6 +7,7 @@ import Drivers from "./Drivers";
 import LoginForm from "./LoginForm";
 import Account from "./Account";
 import RideCreate from "./RideCreate";
+import RideDelete from "./RideDelete";
 import history from "../history";
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/drivers" exact component={Drivers}></Route>
           <Route path="/myprofile" exact component={Account}></Route>
           <Route path="/rides" exact component={RidesList}></Route>
+          <Route path="/rides/delete/:id" exact component={RideDelete}></Route>
         </Switch>
       </Router>
     </div>
