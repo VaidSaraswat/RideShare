@@ -1,10 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { createRide } from '../actions';
+import { fetchRide } from '../actions';
 import moment from 'moment';
 
-class RideCreate extends React.Component {
+/*
+	Now able to set the initial values and update them
+*/
+class RideEdit extends React.Component {
+	componentDidMount() {
+		this.props.fetchRide(this.props.match.params.id, this.props.auth);
+		this.props.initialize({ ...this.props.initialValues });
+	}
 	renderSubmissionError({ error }) {
 		if (error) {
 			return <div className="ui error message">{error}</div>;
@@ -24,7 +31,7 @@ class RideCreate extends React.Component {
 			<div className="field">
 				<label>{label}</label>
 				<div>
-					<input {...input} placeholder={label} type={type} />
+					<input {...input} type={type} placeholder={label} />
 					{this.renderError(meta)}
 				</div>
 			</div>
@@ -32,10 +39,10 @@ class RideCreate extends React.Component {
 	};
 
 	onSubmit = (formValues) => {
-		this.props.createRide(formValues, this.props.auth);
 		console.log(formValues);
 	};
 	render() {
+		//console.log(this.props);
 		return (
 			<form
 				className="ui form error"
@@ -143,9 +150,35 @@ const validate = (formValues) => {
 	return errors;
 };
 
-const mapStateToProps = (state) => {
-	return { auth: state.auth, error: state.validate };
+const mapStateToProps = (state, ownProps) => {
+	return {
+		initialValues: {
+			driverName: state.rides[`${ownProps.match.params.id}`].driverName,
+			driverNumber: state.rides[`${ownProps.match.params.id}`].driverNumber,
+			departingLocation:
+				state.rides[`${ownProps.match.params.id}`].departingLocation,
+			arrivingLocation:
+				state.rides[`${ownProps.match.params.id}`].arrivingLocation,
+			departingDate: moment(
+				state.rides[`${ownProps.match.params.id}`].departingDate
+			).format('YYYY-MM-DD'),
+			dropOffAlong: `${
+				state.rides[ownProps.match.params.id].dropOffAlong === true
+					? 'yes'
+					: 'no'
+			}`,
+			departingTime: state.rides[`${ownProps.match.params.id}`].departingTime,
+			price: state.rides[`${ownProps.match.params.id}`].price,
+		},
+		auth: state.auth,
+		error: state.validate,
+	};
 };
 
-RideCreate = connect(mapStateToProps, { createRide })(RideCreate);
-export default reduxForm({ form: 'createRideForm', validate })(RideCreate);
+RideEdit = connect(mapStateToProps, { fetchRide })(RideEdit);
+export default reduxForm({
+	form: 'editRideForm',
+	validate,
+	enableReinitialize: true,
+	keepDirtyOnReinitialize: true,
+})(RideEdit);
