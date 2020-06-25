@@ -11,10 +11,11 @@ export default (state = {}, action) => {
 	switch (action.type) {
 		case FETCH_RIDES:
 			return { ..._.mapKeys(action.payload, '_id'), ...state };
+		// return { ..._.mapKeys(action.payload, '_id') };
 		case FETCH_RIDE:
 			return { [action.payload._id]: action.payload };
 		case EDIT_RIDE:
-			return { ...state, [action.payload.id]: action.payload };
+			return { ...state, [action.payload._id]: action.payload };
 		case DELETE_RIDE:
 			return _.omit(state, action.payload);
 		case SIGN_OUT:

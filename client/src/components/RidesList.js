@@ -2,12 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { fetchRides } from '../actions';
 import { Link } from 'react-router-dom';
-//TODO
-/*
-  Need to update the backend to now simply delete a ride based of the rideId passed through the frontend  DONE
-  Need to update backend to now also except editing rides
-  Need to create routes/components for deleting/editing rides on the front end
-*/
 class RidesList extends React.Component {
 	componentDidMount() {
 		this.props.fetchRides(this.props.auth);
@@ -22,6 +16,7 @@ class RidesList extends React.Component {
 	}
 	parseDate(date) {
 		let formattedDate = new Date(date);
+		// console.log('This is the parsed date ' + formattedDate.toDateString());
 		return formattedDate.toDateString();
 	}
 
@@ -77,7 +72,7 @@ class RidesList extends React.Component {
 							Driver Number: {ride.driverNumber}
 						</div>
 						<div className="four wide column">
-							Drop Off Along: {ride.dropOffAlong ? 'yes' : 'no'}
+							Drop Off Along: {ride.dropOffAlong === 'yes' ? 'yes' : 'no'}
 						</div>
 						{this.renderAdmin(ride)}
 					</div>

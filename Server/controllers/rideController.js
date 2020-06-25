@@ -87,13 +87,7 @@ router
 			ride.price = req.body.price;
 			ride.driverName = req.body.driverName;
 			ride.driverNumber = req.body.driverNumber;
-
-			//Check if the driver is willing to do drop offs along the way
-			if (req.body.dropOffAlong.toLowerCase() === 'yes') {
-				ride.dropOffAlong = true;
-			} else {
-				ride.dropOffAlong = false;
-			}
+			ride.dropOffAlong = req.body.dropOffAlong;
 
 			//Check if the ride already exists if so then redirect indicating that the ride was already created, otherwise save the ride to the db
 			let exists = await Ride.exists({
@@ -131,6 +125,29 @@ router
 					res.json(ride);
 				}
 			});
+		}
+	})
+
+	.patch(authenticateToken, (req, res) => {
+		if (req.payload !== null) {
+			Ride.findByIdAndUpdate(
+				req.params.id,
+				{
+					...req.body,
+					departingDate: parseDate(
+						req.body.departingDate,
+						req.body.departingTime
+					),
+				},
+				{ new: true },
+				(err, ride) => {
+					if (err) {
+						res.json({ error: err });
+					} else {
+						res.json(ride);
+					}
+				}
+			);
 		}
 	})
 	//Delete ride from database

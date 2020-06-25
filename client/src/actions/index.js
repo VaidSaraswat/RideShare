@@ -3,8 +3,10 @@ import {
 	SIGN_OUT,
 	FETCH_RIDES,
 	FETCH_RIDE,
+	FETCH_RIDE_ERROR,
 	DELETE_RIDE,
 	EDIT_RIDE,
+	FAILED_RIDE_EDIT,
 	ADD_REVIEW,
 	FETCH_REVIEWS,
 	FETCH_ACCOUNT,
@@ -12,7 +14,6 @@ import {
 	SUCCESSFUL_SIGN_IN,
 	FAILED_RIDE_CREATE,
 	SUCCESSFUL_RIDE_CREATE,
-	FETCH_RIDE_ERROR,
 } from './types';
 
 import rides from '../apis/rideServer';
@@ -78,13 +79,21 @@ export const createRide = (formvalues, { accessToken, userId }) => async (
 	}
 };
 
-export const editRide = (token, formValues, id) => async (dispatch) => {
-	const response = rides.patch(`/api/rides/${id}`, {
-		data: formValues,
-		headers: { Authorization: 'Bearer ' + token },
-	});
-
-	dispatch({ type: EDIT_RIDE, payload: response.data });
+export const editRide = (formValues, { accessToken }, id) => async (
+	dispatch
+) => {
+	const response = await rides.patch(
+		`/rides/${id}`,
+		{ ...formValues },
+		{ headers: { Authorization: 'Bearer ' + accessToken } }
+	);
+	//If there is an error update validate reducer
+	if (response.data.error) {
+		dispatch({ type: FAILED_RIDE_EDIT, payload: response.data.error });
+	} else {
+		dispatch({ type: EDIT_RIDE, payload: response.data });
+		history.push('/rides');
+	}
 };
 
 export const deleteRide = ({ accessToken }, id) => async (dispatch) => {

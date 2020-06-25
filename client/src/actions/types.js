@@ -5,6 +5,7 @@ export const FETCH_RIDE = 'FETCH_RIDE';
 export const FETCH_RIDE_ERROR = 'FETCH_RIDE_ERROR';
 export const DELETE_RIDE = 'DELETE_RIDE';
 export const EDIT_RIDE = 'EDIT_RIDE';
+export const FAILED_RIDE_EDIT = 'FAILED_RIDE_EDIT';
 export const ADD_REVIEW = 'ADD_REVIEW';
 export const FETCH_REVIEWS = 'FETCH_REVIEWS';
 export const FETCH_ACCOUNT = 'FETCH_ACCOUNT';

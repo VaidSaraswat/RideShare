@@ -33,13 +33,13 @@ class RideCreate extends React.Component {
 
 	onSubmit = (formValues) => {
 		this.props.createRide(formValues, this.props.auth);
-		console.log(formValues);
 	};
 	render() {
 		return (
 			<form
 				className="ui form error"
 				onSubmit={this.props.handleSubmit(this.onSubmit)}
+				autoComplete="no"
 			>
 				<h4 className="ui dividing header">Ride Information</h4>
 				<div className="four fields">

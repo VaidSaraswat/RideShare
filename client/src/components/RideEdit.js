@@ -1,12 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { fetchRide } from '../actions';
+import { fetchRide, editRide } from '../actions';
 import moment from 'moment';
 
-/*
-	Now able to set the initial values and update them
-*/
 class RideEdit extends React.Component {
 	componentDidMount() {
 		this.props.fetchRide(this.props.match.params.id, this.props.auth);
@@ -39,14 +36,18 @@ class RideEdit extends React.Component {
 	};
 
 	onSubmit = (formValues) => {
-		console.log(formValues);
+		this.props.editRide(
+			formValues,
+			this.props.auth,
+			this.props.match.params.id
+		);
 	};
 	render() {
-		//console.log(this.props);
 		return (
 			<form
 				className="ui form error"
 				onSubmit={this.props.handleSubmit(this.onSubmit)}
+				autoComplete="off"
 			>
 				<h4 className="ui dividing header">Ride Information</h4>
 				<div className="four fields">
@@ -105,7 +106,7 @@ class RideEdit extends React.Component {
 					></Field>
 				</div>
 				<button className="ui button primary" disabled={this.props.submitting}>
-					Create
+					Edit
 				</button>
 				<button
 					className="ui button"
@@ -162,11 +163,7 @@ const mapStateToProps = (state, ownProps) => {
 			departingDate: moment(
 				state.rides[`${ownProps.match.params.id}`].departingDate
 			).format('YYYY-MM-DD'),
-			dropOffAlong: `${
-				state.rides[ownProps.match.params.id].dropOffAlong === true
-					? 'yes'
-					: 'no'
-			}`,
+			dropOffAlong: state.rides[`${ownProps.match.params.id}`].dropOffAlong,
 			departingTime: state.rides[`${ownProps.match.params.id}`].departingTime,
 			price: state.rides[`${ownProps.match.params.id}`].price,
 		},
@@ -175,7 +172,7 @@ const mapStateToProps = (state, ownProps) => {
 	};
 };
 
-RideEdit = connect(mapStateToProps, { fetchRide })(RideEdit);
+RideEdit = connect(mapStateToProps, { fetchRide, editRide })(RideEdit);
 export default reduxForm({
 	form: 'editRideForm',
 	validate,
