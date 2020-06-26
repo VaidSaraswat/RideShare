@@ -5,6 +5,7 @@ import RidesList from './RidesList';
 import AddReview from './AddReview';
 import Drivers from './Drivers';
 import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 import Account from './Account';
 import RideCreate from './RideCreate';
 import RideDelete from './RideDelete';
@@ -18,6 +19,7 @@ const App = () => {
 				<Header />
 				<Switch>
 					<Route path="/" exact component={LoginForm}></Route>
+					<Route path="/register" exact component={RegisterForm}></Route>
 					<Route path="/addride" exact component={RideCreate}></Route>
 					<Route path="/addreview" exact component={AddReview}></Route>
 					<Route path="/drivers" exact component={Drivers}></Route>

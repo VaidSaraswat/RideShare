@@ -14,11 +14,16 @@ import {
 	SUCCESSFUL_SIGN_IN,
 	FAILED_RIDE_CREATE,
 	SUCCESSFUL_RIDE_CREATE,
+	FAILED_REGISTER,
+	ATTEMPT_REGISTER,
 } from './types';
 
 import rides from '../apis/rideServer';
 import auth from '../apis/authServer';
 import history from '../history';
+
+//Used to create delay
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 //////////Authentication Actions
 export const signIn = ({ name, password }) => async (dispatch) => {
@@ -29,10 +34,20 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 		dispatch({ type: SUCCESSFUL_SIGN_IN }); //Update validation state
 		history.push('/rides'); //Send user back to main rides page
 	} else {
-		dispatch({ type: FAILED_SIGN_IN, payload: response.data }); //Update validation state
+		dispatch({ type: FAILED_SIGN_IN, payload: response.data.error }); //Update validation state
 	}
 };
 
+export const register = ({ name, number, password }) => async (dispatch) => {
+	const response = await auth.put('/register', { name, number, password });
+	if (response.data.error) {
+		dispatch({ type: FAILED_REGISTER, payload: response.data.error });
+		await delay(3000); //Display error message for 3 seconds
+		dispatch({ type: ATTEMPT_REGISTER });
+	} else {
+		history.push('/'); //Send user to the login page
+	}
+};
 //Destructure the token key out of the refreshToken and send it to the server to remove it from list of refreshTokens
 export const signOut = ({ token }) => async (dispatch) => {
 	await auth.post('/logout', { token });
@@ -51,7 +66,7 @@ export const fetchRide = (id, { accessToken }) => async (dispatch) => {
 	const response = await rides.get(`/rides/${id}`, {
 		headers: { Authorization: 'Bearer ' + accessToken },
 	});
-
+	//If there is an error update validate reducer
 	if (response.data.error) {
 		dispatch({ type: FETCH_RIDE_ERROR, payload: response.data });
 	} else {

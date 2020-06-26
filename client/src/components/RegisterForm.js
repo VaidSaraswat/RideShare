@@ -1,9 +1,9 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { signIn } from '../actions';
+import { register } from '../actions';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-class LoginForm extends React.Component {
+
+class RegisterForm extends React.Component {
 	renderErrors({ error, touched }) {
 		if (touched && error) {
 			return (
@@ -32,15 +32,14 @@ class LoginForm extends React.Component {
 	};
 
 	onSubmit = (formValues) => {
-		this.props.signIn(formValues);
+		this.props.register(formValues);
+		console.log(formValues);
 	};
-
 	render() {
 		return (
 			<form
 				className="ui form error"
 				onSubmit={this.props.handleSubmit(this.onSubmit)}
-				autoComplete="no"
 			>
 				<Field
 					name="name"
@@ -49,30 +48,28 @@ class LoginForm extends React.Component {
 					label="Username"
 				></Field>
 				<Field
+					name="number"
+					type="text"
+					component={this.renderInput}
+					label="Phone Number"
+				></Field>
+				<Field
 					name="password"
 					type="password"
 					component={this.renderInput}
 					label="Password"
-				/>
-				<div>
-					<button
-						className="ui button primary"
-						disabled={this.props.submitting}
-					>
-						Log In
-					</button>
-					<button
-						className="ui button"
-						disabled={this.props.pristine || this.props.submitting}
-						onClick={this.props.reset}
-					>
-						Cancel
-					</button>
-					<Link className="ui button teal" to="/register">
-						Create Account
-					</Link>
-				</div>
-				{this.renderSubmissionError(this.props.auth)}
+				></Field>
+				<button className="ui button primary" disabled={this.props.submitting}>
+					Register
+				</button>
+				<button
+					className="ui button"
+					disabled={this.props.pristine || this.props.submitting}
+					onClick={this.props.reset}
+				>
+					Cancel
+				</button>
+				{this.renderSubmissionError(this.props.error)}
 			</form>
 		);
 	}
@@ -86,12 +83,17 @@ const validate = (formValues) => {
 	if (!formValues.password) {
 		errors.password = 'You must enter a password';
 	}
+	if (!formValues.number) {
+		errors.number = 'You must enter a phone number';
+	}
 
 	return errors;
 };
-const mapStateToProps = (state) => {
-	return { auth: state.validate };
-};
-LoginForm = connect(mapStateToProps, { signIn })(LoginForm);
 
-export default reduxForm({ form: 'loginForm', validate })(LoginForm);
+const mapStateToProps = (state) => {
+	return { error: state.validate };
+};
+
+RegisterForm = connect(mapStateToProps, { register })(RegisterForm);
+
+export default reduxForm({ form: 'registerForm', validate })(RegisterForm);
