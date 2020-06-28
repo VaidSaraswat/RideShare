@@ -16,6 +16,8 @@ class RegisterForm extends React.Component {
 	renderSubmissionError({ error }) {
 		if (error) {
 			return <div className="ui error message">{error}</div>;
+		} else {
+			return null;
 		}
 	}
 	renderInput = ({ input, label, type, meta }) => {

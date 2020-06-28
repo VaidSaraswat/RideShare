@@ -128,9 +128,9 @@ export const fetchReviews = (token) => async (dispatch) => {
 	dispatch({ type: FETCH_REVIEWS, payload: response.data });
 };
 
-export const fetchAccount = (token) => async (dispatch) => {
-	const response = await rides.get('/api/account', {
-		headers: { Authorization: 'Bearer ' + token },
+export const fetchAccount = ({ userId, accessToken }) => async (dispatch) => {
+	const response = await rides.get(`/account/${userId}`, {
+		headers: { Authorization: 'Bearer ' + accessToken },
 	});
 	dispatch({ type: FETCH_ACCOUNT, payload: response.data });
 };

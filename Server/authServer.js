@@ -94,8 +94,6 @@ router.route('/login').post(async (req, res) => {
 					accessToken: accessToken,
 					refreshToken: refreshToken,
 					userId: user._id,
-					name: user.name,
-					number: user.number,
 				});
 			} else {
 				res.json({ error: 'Invalid Username/Password' });

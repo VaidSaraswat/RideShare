@@ -23,7 +23,7 @@ const App = () => {
 					<Route path="/addride" exact component={RideCreate}></Route>
 					<Route path="/addreview" exact component={AddReview}></Route>
 					<Route path="/drivers" exact component={Drivers}></Route>
-					<Route path="/myprofile" exact component={Account}></Route>
+					<Route path="/myprofile/:id" exact component={Account}></Route>
 					<Route path="/rides" exact component={RidesList}></Route>
 					<Route path="/rides/delete/:id" exact component={RideDelete}></Route>
 					<Route path="/rides/edit/:id" exact component={RideEdit}></Route>

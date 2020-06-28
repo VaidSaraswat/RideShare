@@ -53,7 +53,7 @@ class RidesList extends React.Component {
 						<div className="right floated right aligned eight wide column">
 							<img
 								className="ui avatar image"
-								src="https://semantic-ui.com/images/avatar/small/christian.jpg"
+								src={require('../images/small/christian.jpg')}
 								alt="This is an avatar"
 							/>
 							{ride.driverName}
