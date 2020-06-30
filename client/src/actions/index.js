@@ -10,12 +10,16 @@ import {
 	ADD_REVIEW,
 	FETCH_REVIEWS,
 	FETCH_ACCOUNT,
+	UPDATE_ACCOUNT,
 	FAILED_SIGN_IN,
 	SUCCESSFUL_SIGN_IN,
 	FAILED_RIDE_CREATE,
 	SUCCESSFUL_RIDE_CREATE,
 	FAILED_REGISTER,
 	ATTEMPT_REGISTER,
+	AVATAR_SELECTED,
+	EDIT_RIDE_AVATAR,
+	ATTEMPT_SIGN_IN,
 } from './types';
 
 import rides from '../apis/rideServer';
@@ -30,11 +34,21 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 	const response = await auth.post('/login', { name, password });
 	//Only update sign in state if server sends back a refresh and access token
 	if (response.data.accessToken && response.data.refreshToken) {
-		dispatch({ type: SIGN_IN, payload: response.data });
+		dispatch({
+			type: SIGN_IN,
+			payload: {
+				accessToken: response.data.accessToken,
+				refreshToken: response.data.refreshToken,
+				userId: response.data.userId,
+			},
+		});
+		dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
 		dispatch({ type: SUCCESSFUL_SIGN_IN }); //Update validation state
 		history.push('/rides'); //Send user back to main rides page
 	} else {
 		dispatch({ type: FAILED_SIGN_IN, payload: response.data.error }); //Update validation state
+		await delay(3000); //Display error message for 3 seconds
+		dispatch({ type: ATTEMPT_SIGN_IN });
 	}
 };
 
@@ -74,12 +88,14 @@ export const fetchRide = (id, { accessToken }) => async (dispatch) => {
 	}
 };
 
-export const createRide = (formvalues, { accessToken, userId }) => async (
-	dispatch
-) => {
+export const createRide = (
+	formvalues,
+	avatar,
+	{ accessToken, userId }
+) => async (dispatch) => {
 	const response = await rides.put(
 		'/rides',
-		{ ...formvalues, userId },
+		{ ...formvalues, avatar, userId },
 		{
 			headers: { Authorization: 'Bearer ' + accessToken },
 		}
@@ -133,6 +149,7 @@ export const fetchAccount = ({ userId, accessToken }) => async (dispatch) => {
 		headers: { Authorization: 'Bearer ' + accessToken },
 	});
 	dispatch({ type: FETCH_ACCOUNT, payload: response.data });
+	dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
 };
 
 export const addReview = (formValues, token) => async (dispatch) => {
@@ -141,4 +158,37 @@ export const addReview = (formValues, token) => async (dispatch) => {
 		headers: { Authorization: 'Bearer ' + token },
 	});
 	dispatch({ type: ADD_REVIEW, payload: response.data });
+};
+
+export const selectAvatar = (id, avatar, { accessToken }) => async (
+	dispatch
+) => {
+	const response = await rides.post(
+		`/account/updateAvatar/${id}`,
+		{ avatar },
+		{
+			headers: { Authorization: 'Bearer ' + accessToken },
+		}
+	);
+	if (response.data.error) {
+		console.log('error');
+	} else {
+		dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
+		dispatch({ type: UPDATE_ACCOUNT, payload: response.data });
+	}
+};
+
+export const updateRideAvatar = (userId, avatar, { accessToken }) => async (
+	dispatch
+) => {
+	const response = await rides.post(
+		'/rides/updateAvatar',
+		{ userId, avatar },
+		{ headers: { Authorization: 'Bearer ' + accessToken } }
+	);
+
+	if (response.data.error) {
+	} else {
+		dispatch({ type: EDIT_RIDE_AVATAR, payload: response.data });
+	}
 };

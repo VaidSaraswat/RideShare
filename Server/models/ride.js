@@ -11,6 +11,7 @@ const RideSchema = new Schema({
 	dropOffAlong: { type: String, required: true },
 	driverName: { type: String, required: true },
 	driverNumber: { type: String, required: true },
+	avatar: { type: String, required: true },
 });
 
 module.exports = mongoose.model('Ride', RideSchema);

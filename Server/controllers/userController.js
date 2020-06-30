@@ -32,8 +32,31 @@ router
 				if (err) {
 					res.json({ error: err });
 				}
-				res.json({ name: user.name, number: user.number });
+				res.json({ name: user.name, number: user.number, avatar: user.avatar });
 			});
+		}
+	});
+
+router
+	.route('/api/account/updateAvatar/:id')
+	.post(authenticateToken, async (req, res) => {
+		if (req.payload !== null) {
+			User.findByIdAndUpdate(
+				req.params.id,
+				{ avatar: req.body.avatar },
+				{ new: true },
+				(err, user) => {
+					if (err) {
+						res.json({ error: err });
+					} else {
+						res.json({
+							name: user.name,
+							number: user.number,
+							avatar: user.avatar,
+						});
+					}
+				}
+			);
 		}
 	});
 

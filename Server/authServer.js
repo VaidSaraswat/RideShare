@@ -94,6 +94,7 @@ router.route('/login').post(async (req, res) => {
 					accessToken: accessToken,
 					refreshToken: refreshToken,
 					userId: user._id,
+					avatar: user.avatar,
 				});
 			} else {
 				res.json({ error: 'Invalid Username/Password' });
@@ -117,6 +118,7 @@ router
 			let user = new User();
 			user.name = req.body.name;
 			user.number = req.body.number;
+			user.avatar = 'christian.jpg';
 
 			try {
 				let hashedPassword = await bcrypt.hash(req.body.password, 10);

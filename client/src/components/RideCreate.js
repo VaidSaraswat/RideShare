@@ -32,7 +32,7 @@ class RideCreate extends React.Component {
 	};
 
 	onSubmit = (formValues) => {
-		this.props.createRide(formValues, this.props.auth);
+		this.props.createRide(formValues, this.props.avatar, this.props.auth);
 	};
 	render() {
 		return (
@@ -144,7 +144,11 @@ const validate = (formValues) => {
 };
 
 const mapStateToProps = (state) => {
-	return { auth: state.auth, error: state.validate };
+	return {
+		auth: state.auth,
+		error: state.validate,
+		avatar: state.selectedImage,
+	};
 };
 
 RideCreate = connect(mapStateToProps, { createRide })(RideCreate);

@@ -35,7 +35,6 @@ class RegisterForm extends React.Component {
 
 	onSubmit = (formValues) => {
 		this.props.register(formValues);
-		console.log(formValues);
 	};
 	render() {
 		return (

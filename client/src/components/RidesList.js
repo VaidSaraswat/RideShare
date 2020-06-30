@@ -53,7 +53,7 @@ class RidesList extends React.Component {
 						<div className="right floated right aligned eight wide column">
 							<img
 								className="ui avatar image"
-								src={require('../images/small/christian.jpg')}
+								src={require(`../images/small/${ride.avatar}`)}
 								alt="This is an avatar"
 							/>
 							{ride.driverName}
@@ -86,6 +86,9 @@ class RidesList extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-	return { rides: Object.values(state.rides), auth: state.auth };
+	return {
+		rides: Object.values(state.rides),
+		auth: state.auth,
+	};
 };
 export default connect(mapStateToProps, { fetchRides })(RidesList);

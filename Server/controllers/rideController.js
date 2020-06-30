@@ -88,6 +88,7 @@ router
 			ride.driverName = req.body.driverName;
 			ride.driverNumber = req.body.driverNumber;
 			ride.dropOffAlong = req.body.dropOffAlong;
+			ride.avatar = req.body.avatar;
 
 			//Check if the ride already exists if so then redirect indicating that the ride was already created, otherwise save the ride to the db
 			let exists = await Ride.exists({
@@ -163,6 +164,28 @@ router
 		}
 	});
 
+router
+	.route('/api/rides/updateAvatar')
+	.post(authenticateToken, async (req, res) => {
+		if (req.payload !== null) {
+			await Ride.updateMany(
+				{ userId: req.body.userId },
+				{ avatar: req.body.avatar },
+				(err) => {
+					if (err) {
+						res.json({ error: err });
+					}
+				}
+			);
+			Ride.find((err, rides) => {
+				if (err) {
+					res.json({ error: err });
+				} else {
+					res.json(rides);
+				}
+			});
+		}
+	});
 router.route('/api/rides/updateName').post((req, res) => {
 	Ride.updateMany(
 		{ driverName: req.body.oldName },
