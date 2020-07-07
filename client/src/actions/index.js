@@ -42,6 +42,14 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 				userId: response.data.userId,
 			},
 		});
+		dispatch({
+			type: FETCH_ACCOUNT,
+			payload: {
+				name: response.data.username,
+				number: response.data.number,
+				avatar: response.data.avatar,
+			},
+		});
 		dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
 		dispatch({ type: SUCCESSFUL_SIGN_IN }); //Update validation state
 		history.push('/rides'); //Send user back to main rides page
@@ -137,9 +145,9 @@ export const deleteRide = ({ accessToken }, id) => async (dispatch) => {
 };
 
 //////////Review Actions
-export const fetchReviews = (token) => async (dispatch) => {
-	const response = await rides.get('/api/ratings', {
-		headers: { Authorization: 'Bearer ' + token },
+export const fetchReviews = ({ accessToken }) => async (dispatch) => {
+	const response = await rides.get('/reviews', {
+		headers: { Authorization: 'Bearer ' + accessToken },
 	});
 	dispatch({ type: FETCH_REVIEWS, payload: response.data });
 };
@@ -152,11 +160,16 @@ export const fetchAccount = ({ userId, accessToken }) => async (dispatch) => {
 	dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
 };
 
-export const addReview = (formValues, token) => async (dispatch) => {
-	const response = await rides.put('/api/addRating', {
-		data: { formValues },
-		headers: { Authorization: 'Bearer ' + token },
-	});
+export const addReview = (
+	formValues,
+	{ name, avatar },
+	{ accessToken }
+) => async (dispatch) => {
+	const response = await rides.put(
+		'/addReview',
+		{ ...formValues, reviewerName: name, reviewerAvatar: avatar },
+		{ headers: { Authorization: 'Bearer ' + accessToken } }
+	);
 	dispatch({ type: ADD_REVIEW, payload: response.data });
 };
 

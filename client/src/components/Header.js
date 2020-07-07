@@ -16,8 +16,8 @@ class Header extends React.Component {
 					<Link to="/addreview" className="header item">
 						Add Review
 					</Link>
-					<Link to="/drivers" className="header item">
-						Drivers
+					<Link to="/reviews" className="header item">
+						Reviews
 					</Link>
 					<Link
 						to={`/myprofile/${this.props.auth.userId}`}

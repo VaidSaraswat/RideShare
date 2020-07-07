@@ -3,7 +3,7 @@ import { Router, Route, Switch } from 'react-router-dom';
 import Header from './Header';
 import RidesList from './RidesList';
 import AddReview from './AddReview';
-import Drivers from './Drivers';
+import Reviews from './Reviews';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import Account from './Account';
@@ -22,7 +22,7 @@ const App = () => {
 					<Route path="/register" exact component={RegisterForm}></Route>
 					<Route path="/addride" exact component={RideCreate}></Route>
 					<Route path="/addreview" exact component={AddReview}></Route>
-					<Route path="/drivers" exact component={Drivers}></Route>
+					<Route path="/reviews" exact component={Reviews}></Route>
 					<Route path="/myprofile/:id" exact component={Account}></Route>
 					<Route path="/rides" exact component={RidesList}></Route>
 					<Route path="/rides/delete/:id" exact component={RideDelete}></Route>

@@ -3,17 +3,6 @@ import { connect } from 'react-redux';
 import { fetchAccount } from '../actions';
 import { selectAvatar, updateRideAvatar } from '../actions';
 
-/*
-	Need to update the rides model so that it also has an avatar property which can show the users avatar
-
-	Steps:
-	1. First update the rides model so that it now has an avatar property
-	2. Wire up backend so that it can update the avatar property on the ride itself
-	3. Set up the action creator which will update the users avatar when the navigate to the home page
-	4. Set up user reducer so that it will take in the users current information ie: name, number, and avatar
-
-*/
-
 class Account extends React.Component {
 	componentDidMount() {
 		this.props.fetchAccount(this.props.auth);
