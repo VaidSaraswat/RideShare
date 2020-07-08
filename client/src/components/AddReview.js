@@ -4,6 +4,11 @@ import { Field, reduxForm } from 'redux-form';
 import { addReview } from '../actions';
 
 class AddReview extends React.Component {
+	renderSubmissionError({ error }) {
+		if (error) {
+			return <div className="ui error message">{error}</div>;
+		}
+	}
 	renderError({ error, touched }) {
 		if (touched && error) {
 			return (

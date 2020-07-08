@@ -6,8 +6,8 @@ import {
 	SUCCESSFUL_RIDE_CREATE,
 	FAILED_RIDE_EDIT,
 	FAILED_REGISTER,
-	ATTEMPT_REGISTER,
-	ATTEMPT_SIGN_IN,
+	ATTEMPT,
+	FAILED_REVIEW_CREATE,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -26,9 +26,9 @@ export default (state = INITIAL_STATE, action) => {
 			return { ...state, error: action.payload };
 		case FAILED_REGISTER:
 			return { ...state, error: action.payload };
-		case ATTEMPT_SIGN_IN:
-			return { ...state, error: null };
-		case ATTEMPT_REGISTER:
+		case FAILED_REVIEW_CREATE:
+			return { ...state, error: action.payload };
+		case ATTEMPT:
 			return { ...state, error: null };
 		case SUCCESSFUL_SIGN_IN:
 			return { ...state, error: null };

@@ -7,33 +7,53 @@ class Reviews extends React.Component {
 	}
 
 	renderList() {
-		return this.props.reviews.map((reviewList) => {
-			return (
-				<div className="ui segment" key={reviewList._id}>
-					<div className="left floated left aligned column">
-						<i className="large id badge icon"></i>
-						{reviewList.driverName}
-					</div>
-					{reviewList.reviews.map((review) => {
-						return (
-							<div className="ui segment" key={review._id}>
-								<div className="left floated left aligned eight wide column">
+		return (
+			<div>
+				<h4 className="ui dividing header">Reviews</h4>
+				{this.props.reviews.map((reviewList) => {
+					return (
+						<div
+							className="ui comments"
+							key={reviewList._id}
+							style={{ paddingLeft: '1vw' }}
+						>
+							<div className="comment">
+								<a className="avatar" href="localhost:3000">
 									<img
-										className="ui avatar image"
-										src={require(`../images/small/${review.reviewerAvatar}`)}
+										src={require(`../images/small/joe.jpg`)}
 										alt="This is an avatar"
-									/>
-									{review.reviewerName}
-								</div>
-								<div className="right floated left aligned eight wide column">
-									{review.comment}
+									></img>
+								</a>
+								<div className="content">
+									<a className="author" href="localhost:3000">
+										{reviewList.driverName}
+									</a>
 								</div>
 							</div>
-						);
-					})}
-				</div>
-			);
-		});
+							<div className="ui comments" style={{ paddingLeft: '4vw' }}>
+								<h4 className="ui dividing header">Comments</h4>
+								{reviewList.reviews.map((review) => {
+									return (
+										<div className="comment" key={review._id}>
+											<a className="avatar" href="localhost:3000">
+												<img
+													src={require(`../images/small/${review.reviewerAvatar}`)}
+													alt="This is an avatar"
+												/>
+											</a>
+											<div className="content">
+												<div className="author">{review.reviewerName}</div>
+												<div className="text">{review.comment}</div>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					);
+				})}
+			</div>
+		);
 	}
 	render() {
 		return <div className="ui segments">{this.renderList()}</div>;

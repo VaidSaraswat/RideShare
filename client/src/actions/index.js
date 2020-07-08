@@ -9,6 +9,7 @@ import {
 	FAILED_RIDE_EDIT,
 	ADD_REVIEW,
 	FETCH_REVIEWS,
+	FAILED_REVIEW_CREATE,
 	FETCH_ACCOUNT,
 	UPDATE_ACCOUNT,
 	FAILED_SIGN_IN,
@@ -16,10 +17,10 @@ import {
 	FAILED_RIDE_CREATE,
 	SUCCESSFUL_RIDE_CREATE,
 	FAILED_REGISTER,
-	ATTEMPT_REGISTER,
+	ATTEMPT,
 	AVATAR_SELECTED,
+	FAILED_AVATAR_SELECTED,
 	EDIT_RIDE_AVATAR,
-	ATTEMPT_SIGN_IN,
 } from './types';
 
 import rides from '../apis/rideServer';
@@ -56,7 +57,7 @@ export const signIn = ({ name, password }) => async (dispatch) => {
 	} else {
 		dispatch({ type: FAILED_SIGN_IN, payload: response.data.error }); //Update validation state
 		await delay(3000); //Display error message for 3 seconds
-		dispatch({ type: ATTEMPT_SIGN_IN });
+		dispatch({ type: ATTEMPT });
 	}
 };
 
@@ -65,7 +66,7 @@ export const register = ({ name, number, password }) => async (dispatch) => {
 	if (response.data.error) {
 		dispatch({ type: FAILED_REGISTER, payload: response.data.error });
 		await delay(3000); //Display error message for 3 seconds
-		dispatch({ type: ATTEMPT_REGISTER });
+		dispatch({ type: ATTEMPT });
 	} else {
 		history.push('/'); //Send user to the login page
 	}
@@ -144,20 +145,20 @@ export const deleteRide = ({ accessToken }, id) => async (dispatch) => {
 	history.push('/rides');
 };
 
-//////////Review Actions
-export const fetchReviews = ({ accessToken }) => async (dispatch) => {
-	const response = await rides.get('/reviews', {
-		headers: { Authorization: 'Bearer ' + accessToken },
-	});
-	dispatch({ type: FETCH_REVIEWS, payload: response.data });
-};
-
+//////////Account Actions
 export const fetchAccount = ({ userId, accessToken }) => async (dispatch) => {
 	const response = await rides.get(`/account/${userId}`, {
 		headers: { Authorization: 'Bearer ' + accessToken },
 	});
 	dispatch({ type: FETCH_ACCOUNT, payload: response.data });
 	dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
+};
+//////////Review Actions
+export const fetchReviews = ({ accessToken }) => async (dispatch) => {
+	const response = await rides.get('/reviews', {
+		headers: { Authorization: 'Bearer ' + accessToken },
+	});
+	dispatch({ type: FETCH_REVIEWS, payload: response.data });
 };
 
 export const addReview = (
@@ -170,7 +171,14 @@ export const addReview = (
 		{ ...formValues, reviewerName: name, reviewerAvatar: avatar },
 		{ headers: { Authorization: 'Bearer ' + accessToken } }
 	);
-	dispatch({ type: ADD_REVIEW, payload: response.data });
+
+	if (response.data.error) {
+		dispatch({ type: FAILED_REVIEW_CREATE, payload: response.data.error });
+		await delay(3000); //Display error message for 3 seconds
+		dispatch({ type: ATTEMPT });
+	} else {
+		dispatch({ type: ADD_REVIEW, payload: response.data });
+	}
 };
 
 export const selectAvatar = (id, avatar, { accessToken }) => async (
@@ -184,7 +192,9 @@ export const selectAvatar = (id, avatar, { accessToken }) => async (
 		}
 	);
 	if (response.data.error) {
-		console.log('error');
+		dispatch({ type: FAILED_AVATAR_SELECTED, payload: response.data.error });
+		await delay(3000);
+		dispatch({ type: ATTEMPT });
 	} else {
 		dispatch({ type: AVATAR_SELECTED, payload: response.data.avatar });
 		dispatch({ type: UPDATE_ACCOUNT, payload: response.data });
@@ -201,6 +211,9 @@ export const updateRideAvatar = (userId, avatar, { accessToken }) => async (
 	);
 
 	if (response.data.error) {
+		dispatch({ type: FAILED_AVATAR_SELECTED, payload: response.data.error });
+		await delay(3000);
+		dispatch({ type: ATTEMPT });
 	} else {
 		dispatch({ type: EDIT_RIDE_AVATAR, payload: response.data });
 	}
